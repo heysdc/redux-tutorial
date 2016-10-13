@@ -44,11 +44,11 @@ import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
 
-const connect = (mapStateToProps, mapDispatchToProps) => (comp) => {
+const connect = (mapStateToProps, mapDispatchToProps) => (Comp) => {
   class Connect extends Component {
     render () {
       console.log('ss', this.context, {...mapStateToProps(this.context.store.getState())})
-      return <comp
+      return <Comp
         {
           ...mapStateToProps(this.context.store.getState())
         }
