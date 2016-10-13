@@ -46,11 +46,24 @@ import { Provider } from 'react-redux'
 
 const connect = (mapStateToProps, mapDispatchToProps) => (Comp) => {
   class Connect extends Component {
+    state = {
+      store: this.context.store.getState()
+    }
+
+    componentDidMount () {
+      this.context.store.subscribe(() => {
+        this.setState({
+          store: this.store.getState()
+        })
+      })
+    }
+
     render () {
-      console.log('ss', this.context, {...mapStateToProps(this.context.store.getState())})
+      let store = this.state.store
+      // console.log('ss', this.context, {...mapStateToProps(this.context.store.getState())})
       return <Comp
         {
-          ...mapStateToProps(this.context.store.getState())
+          ...mapStateToProps(store)
         }
         {
           ...mapDispatchToProps(this.context.store.dispatch)
