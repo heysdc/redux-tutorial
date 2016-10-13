@@ -1,0 +1,11 @@
+{
+  "plugins": [
+    "babel"
+  ],
+  "rules": {
+    "arrow-parens": 0,
+    "babel/arrow-parens": 2,
+    "no-console": 0,
+    "no-const-assign": 2
+  }
+}

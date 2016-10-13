@@ -39,102 +39,88 @@ store.subscribe(() => {
 // 更改store
 store.dispatch(actions.addArticle('aaa'))
 
-// React例子
-import React, { Component } from 'react'
-import ReactDOM from 'react-dom'
-import { Provider } from 'react-redux'
+// // React例子
+// import React, { Component } from 'react'
+// import ReactDOM from 'react-dom'
+// import { Provider } from 'react-redux'
 
-const connect = (mapStateToProps, mapDispatchToProps) => (Comp) => {
-  class Connect extends Component {
-    render () {
-      console.log('ss', this.context, {...mapStateToProps(this.context.store.getState())})
-      return <Comp
-        {
-          ...mapStateToProps(this.context.store.getState())
-        }
-        {
-          ...mapDispatchToProps(this.context.store.dispatch)
-        }
-      />
-    }
-  }
-  Connect.contextTypes = {
-    store: React.PropTypes.object
-  }
-  return Connect
-}
+// // 自实现connect
+// const connect = (mapStateToProps, mapDispatchToProps) => (Comp) => {
+//   class Connect extends Component {
+//     state = {
+//       store: this.context.store.getState()
+//     }
+//     componentDidMount = () => {
+//       this.context.store.subscribe(() => {
+//         const store = this.context.store.getState()
+//         this.setState({
+//           store
+//         })
+//       })
+//     }
 
-const AddTodo = ({articles, addArticle}) => {
-  const add = (e) => {
-    e.preventDefault()
-    addArticle(inputNode.value)
-  }
-  let inputNode = null
-  console.log('articles', articles)
-  return <div>
-    <ul>
-      {
-        articles.map((value, id) => (<li key={id}>{value}</li>))
-      }
-    </ul>
-    <form onSubmit={add}>
-      <input ref={(node) => { inputNode = node }} />
-      <button type='sbumit'>添加</button>
-    </form>
-  </div>
-}
+//     render () {
+//       const store = this.state.store
+//       return <Comp
+//         {
+//           ...mapStateToProps(store)
+//         }
+//         {
+//           ...mapDispatchToProps(this.context.store.dispatch)
+//         }
+//       />
+//     }
+//   }
+//   Connect.contextTypes = {
+//     store: React.PropTypes.object
+//   }
+//   return Connect
+// }
 
-const mapDispatchToProps = (dispatch, ownProps) => {
-  return {
-    addArticle: (inputValue) => {
-      dispatch(actions.addArticle(inputValue))
-    }
-  }
-}
+// const AddTodo = ({articles, addArticle}) => {
+//   const add = (e) => {
+//     e.preventDefault()
+//     addArticle(inputNode.value)
+//   }
+//   let inputNode = null
+//   return <div>
+//     <ul>
+//       {
+//         articles.map((value, id) => (<li key={id}>{value}</li>))
+//       }
+//     </ul>
+//     <form onSubmit={add}>
+//       <input ref={(node) => { inputNode = node }} />
+//       <button type='sbumit'>添加</button>
+//     </form>
+//   </div>
+// }
 
-const mapStateToProps = (state, ownProps) => {
-  return {
-    articles: state.articles
-  }
-}
+// const mapDispatchToProps = (dispatch, ownProps) => {
+//   return {
+//     addArticle: (inputValue) => {
+//       dispatch(actions.addArticle(inputValue))
+//     }
+//   }
+// }
 
-const ReactDemo = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(AddTodo)
+// const mapStateToProps = (state, ownProps) => {
+//   return {
+//     articles: state.articles
+//   }
+// }
 
-class Text2 extends Component {
-  render () {
-    console.log('context', this.context)
-    return <div>222</div>
-  }
-}
+// const ReactDemo = connect(
+//   mapStateToProps,
+//   mapDispatchToProps
+// )(AddTodo)
 
-Text2.contextTypes = {
-  color: React.PropTypes.string
-}
+// class World extends Component {
+//   render () {
+//     return <Provider store={store}>
+//       <ReactDemo />
+//     </Provider>
+//   }
+// }
 
-class Text extends Component {
-  getChildContext () {
-    return {color: 'purple'}
-  }
-
-  render () {
-    return <div>
-      <Text2 />
-    </div>
-  }
-}
-Text.childContextTypes = {
-  color: React.PropTypes.string
-}
-class World extends Component {
-  render () {
-    console.log('store', store)
-    return <Provider store={store}>
-      <ReactDemo />
-    </Provider>
-  }
-}
-
-ReactDOM.render(<World />, document.getElementById('root'))
+// ReactDOM.render(<World />, document.getElementById('root'))

@@ -19,7 +19,7 @@
 
 - action一个包含type的普通对象
 
-- **action creator**用于产生action
+- **action creator**用于产生action，主要起到信息处理，得到有效action的作用
 
 - **dispatch函数**接收action传给store，`dispatch(actionCreator(value))`
 
@@ -55,4 +55,151 @@
 
 - newStore = reducer(oldStore, action)
 
-- newState = newStore.getState()
+- state = newStore.getState()
+
+##Usage with React
+
+- react的render来源为state，state变了才能触发render
+
+- dispatch提供监听接口subscribe(func)
+
+- 可以将setState写在注册的监听函数中
+
+- 数据走向为：
+  
+  - dispatch(action)
+
+  - reducer(oldStore, action)
+
+  - newStore = reducer(oldStore, action)
+
+  - reactState = newStore.getState()，触发render
+
+##Middleware
+
+- 在dispatch过程中做其它的事
+
+- 详解：
+  
+  ```js
+  // 1.store改变前后打印出值的变化
+  store.dispatch = (store, action) => {
+    console.log(store.getState())
+    store.dispatch(action)
+    console.log(store.getState())
+  }
+
+  // 2.封装一下
+  const initialLogger = (store, action) => {
+    const next = store.dispatch
+    store.dispatch = function () {
+      console.log(store.getState())
+      next(action)
+      console.log(store.getState())
+    }
+  }
+
+  // 3.如果有多个需求呢，比如还有一个检查dispatch过程是否出错的
+  const initialLogger = (store) => {
+    const next = store.dispatch
+    store.dispatch = function (action) {
+      console.log(store.getState())
+      next(action)
+      console.log(store.getState())
+    }
+  }
+
+  const initialTest = (store) => {
+    const next = store.dispatch
+    store.dispatch = function (action) {
+      try {
+        next(action)
+      } catch (e) {
+        console.error(e)
+      }
+    }
+  }
+
+  // 4.将替换dispatch的操作移除函数
+  const initialLogger = (store) => {
+    const next = store.dispatch
+    return function (action) {
+      console.log(store.getState())
+      next(action)
+      console.log(store.getState())
+    }
+  }
+  store.dispatch = initialLogger(store)
+
+  // 5.后面会覆盖前面，不如在原来dispatch的基础上不断更改，可以修改为
+  const initialLogger = (store, next) => {
+    return (action) => {
+      console.log(store.getState())
+      next(action)
+      console.log(store.getState())
+    }
+  }
+  const initialTest = (store, next) => (action) => {
+    try {
+      next(action)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  const handleMiddleware = (store, middlewares) {
+    middlewares = middlewares.slice(0)
+    const next = store.dispatch
+    middlewares.forEach((mid) => {
+      next = mid(store, next)
+    })
+    return Object.assign({}, store, { dispatch })
+  }
+  ```
+
+##服务端渲染
+
+- 服务端需要准备两部分：
+  - 初始化的html
+  - 初始化的store
+
+  ```js
+  <!doctype html>
+  <html>
+    <head>
+      <title>Redux Universal Example</title>
+    </head>
+    <body>
+      <div id="root">${html}</div>
+      <script>
+        window.__PRELOADED_STATE__ = ${JSON.stringify(preloadedState)}
+      </script>
+      <script src="/static/bundle.js"></script>
+    </body>
+  </html>
+  ```
+
+- html：在服务端跑前端代码，将要渲染的内容转成html
+
+  ```js
+  import { renderToString } from 'react-dom/server'
+  const store = createStore(counterApp)
+
+  const html = renderToString(
+    <Provider store={store}>
+      <App />
+    </Provider>
+  )
+  ```
+
+- store：因为前端有redux，所以要将前端渲染好的数据同步到前端的store中
+
+  ```js
+  const preloadedState = store.getState()
+  ```
+
+- 浏览器端
+
+  ```js
+  const preloadedState = window.__PRELOADED_STATE__
+  const store = createStore(counterApp, preloadedState)
+  ```
