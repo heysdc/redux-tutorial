@@ -1,6 +1,6 @@
 import * as actions from '../actions'
 
-export default function todoApp (state = {articles: []}, action) {
+export default function todoApp (state = {articles: []}, action = {type: undefined}) {
   switch (action.type) {
     case actions.ADD_ARTICLE:
       return Object.assign({}, state, {

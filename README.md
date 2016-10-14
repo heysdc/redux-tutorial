@@ -4,9 +4,11 @@
 ![](http://www.ruanyifeng.com/blogimg/asset/2016/bg2016091802.jpg)
 
 - 可预测的数据容器（store）
-- 容器唯一(store)
-- store内容只读，不能直接修改，需要提交action去修改
-- 纯函数reducers描述store如何被action改变
+
+- redux特点：
+  - 容器唯一(store)
+  - store内容只读，不能直接修改，需要提交action去修改
+  - 纯函数reducers描述store如何被action改变
 
 ##优势
 
@@ -38,8 +40,6 @@
 - reducer纯函数，state为参数，所以不能对state直接更改，要返回一个新的
 
 ##Store
-
-- 保存state
 
 - 提供访问接口`getState()`
 
@@ -160,7 +160,7 @@
 
 - 服务端需要准备两部分：
   - 初始化的html
-  - 初始化的store
+  - 初始化的store:：因为前端有redux，所以要将前端渲染好的数据同步到前端的store中
 
   ```js
   <!doctype html>
@@ -191,7 +191,7 @@
   )
   ```
 
-- store：因为前端有redux，所以要将前端渲染好的数据同步到前端的store中
+- store
 
   ```js
   const preloadedState = store.getState()
@@ -203,3 +203,26 @@
   const preloadedState = window.__PRELOADED_STATE__
   const store = createStore(counterApp, preloadedState)
   ```
+
+##相关推荐库
+
+- **redux-thunk**：处理异步的middleware
+
+  ```js
+  // redux-thunk自实现
+  const thunkMiddleware = (store) => (dispatch) => (action) => {
+    if (typeof action === 'function') {
+      action(dispatch)
+    } else {
+      dispatch(action)
+    }
+  }
+  ```
+
+- **redux-logger**：middleware,便于跟踪对store的修改
+
+- **immutable**：提高store存取效率，便于管理
+
+- **react-redux**：store与react的state联系起来，同时为render提供优化
+
+- **react-router-redux**：兼容**react-router**与**redux**
